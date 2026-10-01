@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #0b1f4b;
+  --color-navy-dark: #071533;
+  --color-morocco-red: #c1272d;
+  --color-morocco-green: #006233;
+  --color-gold: #b8893b;
+  --color-gold-light: #e2c07d;
+  --color-sky: #2f8fe0;
+
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", "Georgia", "Times New Roman", serif;
+
+  --animate-fly: fly 6s ease-in-out infinite;
+  --animate-fade-up: fade-up 0.6s ease-out both;
+  --animate-glide: glide 9s ease-in-out infinite;
+  --animate-scan: scan 2.8s ease-in-out infinite;
+
+  @keyframes fly {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(8px, -6px); }
+  }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes glide {
+    0%, 100% { transform: translate(0, 0) rotate(-4deg); }
+    50% { transform: translate(24px, -14px) rotate(-4deg); }
+  }
+
+  @keyframes scan {
+    0%, 100% { top: 6%; opacity: 0; }
+    10%, 90% { opacity: 1; }
+    50% { top: 92%; }
+  }
+}
+
+@utility bg-sky-hero {
+  background:
+    radial-gradient(ellipse 70% 55% at 62% 38%, #ffffff 0%, rgb(255 255 255 / 0.85) 25%, transparent 70%),
+    linear-gradient(160deg, #1f6fd0 0%, #4ea3ec 30%, #bfe0fb 60%, #eef7ff 100%);
+}
+
+body {
+  @apply bg-navy-dark font-sans text-navy antialiased;
+}
