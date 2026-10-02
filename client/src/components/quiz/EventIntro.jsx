@@ -1,6 +1,69 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { Plane } from 'lucide-react'
 import EventHeader from '../EventHeader.jsx'
 import jets from '../../assets/event/jets-cutout.png'
 import { event } from '../../data/event.js'
+
+function ReadyDialog({ questionCount, onConfirm, onCancel }) {
+  const confirmRef = useRef(null)
+
+  useEffect(() => {
+    confirmRef.current?.focus()
+    const onKey = (e) => e.key === 'Escape' && onCancel()
+    window.addEventListener('keydown', onKey)
+    const { overflow } = document.body.style
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = overflow
+    }
+  }, [onCancel])
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-navy-dark/60 p-5 backdrop-blur-sm animate-fade-in"
+      onClick={onCancel}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ready-title"
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl animate-pop-in"
+      >
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-navy/5 ring-1 ring-navy/10">
+          <Plane className="h-7 w-7 -rotate-45 text-navy" />
+        </div>
+        <h2 id="ready-title" className="mt-4 font-display text-xl font-bold text-navy">
+          Êtes-vous prêt pour le quiz ?
+        </h2>
+        <p className="mt-2 text-sm leading-relaxed text-navy/70">
+          {questionCount} questions chronométrées vous attendent. Vous n’aurez droit qu’à une seule
+          tentative.
+        </p>
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-xl border border-navy/15 py-3 font-semibold text-navy transition hover:bg-navy/5"
+          >
+            Non
+          </button>
+          <button
+            ref={confirmRef}
+            type="button"
+            onClick={onConfirm}
+            className="rounded-xl bg-navy py-3 font-semibold text-white shadow-lg transition hover:bg-navy-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
+          >
+            Oui
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
 
 function InfoItem({ label, value }) {
   return (
@@ -13,6 +76,9 @@ function InfoItem({ label, value }) {
 
 function EventIntro({ onStart, loaded, active, questionCount }) {
   const closed = loaded && !active
+  const [confirming, setConfirming] = useState(false)
+  const cancelConfirm = useCallback(() => setConfirming(false), [])
+
   return (
     <div className="flex flex-1 flex-col animate-fade-up">
       <EventHeader />
@@ -56,7 +122,7 @@ function EventIntro({ onStart, loaded, active, questionCount }) {
       ) : (
         <button
           type="button"
-          onClick={onStart}
+          onClick={() => setConfirming(true)}
           disabled={!questionCount}
           className="mt-6 w-full rounded-xl bg-navy py-3.5 font-semibold uppercase tracking-wider text-white shadow-lg transition hover:bg-navy-dark disabled:cursor-not-allowed disabled:opacity-50"
         >
@@ -67,6 +133,14 @@ function EventIntro({ onStart, loaded, active, questionCount }) {
       <p className="mt-4 text-center text-[11px] text-navy/60">
         Organisé par {event.organizer} avec le {event.partner}
       </p>
+
+      {confirming && !closed && (
+        <ReadyDialog
+          questionCount={questionCount}
+          onConfirm={onStart}
+          onCancel={cancelConfirm}
+        />
+      )}
     </div>
   )
 }
