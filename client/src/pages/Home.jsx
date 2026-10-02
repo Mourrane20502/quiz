@@ -198,8 +198,8 @@ function Home() {
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto grid w-full max-w-7xl flex-1 items-center gap-12 px-6 py-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 lg:px-10">
-        <section className="animate-fade-up">
+      <main className="relative z-10 mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 items-center gap-12 px-5 py-10 sm:px-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-16 lg:px-10">
+        <section className="min-w-0 animate-fade-up">
           <div className="inline-flex items-center gap-3 rounded-full bg-navy px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.25em] text-white shadow">
             <span className="flex h-1.5 w-6 overflow-hidden rounded-full">
               <span className="flex-1 bg-morocco-red" />
@@ -247,7 +247,7 @@ function Home() {
           </div>
         </section>
 
-        <section className="relative animate-fade-up [animation-delay:150ms]">
+        <section className="relative min-w-0 animate-fade-up [animation-delay:150ms]">
           <img
             src={jets}
             alt=""
