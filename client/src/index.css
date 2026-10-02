@@ -9,8 +9,8 @@
   --color-gold-light: #e2c07d;
   --color-sky: #2f8fe0;
 
-  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Playfair Display", "Georgia", "Times New Roman", serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 
   --animate-fly: fly 6s ease-in-out infinite;
   --animate-fade-up: fade-up 0.6s ease-out both;

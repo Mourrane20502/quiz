@@ -1,6 +1,5 @@
 import EventHeader from '../EventHeader.jsx'
-import airshowLogo from '../../assets/event/airshow-logo.png'
-import jets from '../../assets/event/jets.png'
+import jets from '../../assets/event/jets-cutout.png'
 import { event } from '../../data/event.js'
 
 function InfoItem({ label, value }) {
@@ -18,11 +17,11 @@ function EventIntro({ onStart, loaded, active, questionCount }) {
     <div className="flex flex-1 flex-col animate-fade-up">
       <EventHeader />
 
-      <div className="mt-6 flex justify-center">
-        <img src={airshowLogo} alt={event.name} className="w-64 max-w-full" />
-      </div>
-
-      <img src={jets} alt="" className="mx-auto mt-4 w-56 animate-fly" />
+      <img
+        src={jets}
+        alt=""
+        className="mx-auto mt-8 w-64 animate-fly [mask-image:linear-gradient(to_right,transparent_5%,black_40%)]"
+      />
 
       <section className="mt-6 text-center">
         <h1 className="font-display text-4xl font-bold uppercase tracking-wide text-navy">Quiz</h1>

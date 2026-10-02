@@ -4,6 +4,7 @@ import { Info, ListChecks, Power, ShieldCheck } from 'lucide-react'
 import api, { auth, errorMessage } from '../api.js'
 import { usePolling } from '../hooks.js'
 import { Card, CardHeader, PageHeader, Toggle } from '../components/ui.jsx'
+import ChangePasswordCard from '../components/ChangePasswordCard.jsx'
 
 function Settings() {
   const fetcher = useCallback(() => api.get('/settings').then((r) => r.data), [])
@@ -93,6 +94,10 @@ function Settings() {
             Les scores ne sont jamais affichés aux participants : ils ne sont visibles que dans cet espace.
           </p>
         </Card>
+      </div>
+
+      <div className="mt-4">
+        <ChangePasswordCard delay={240} />
       </div>
     </>
   )

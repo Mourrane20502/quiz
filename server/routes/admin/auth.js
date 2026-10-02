@@ -59,4 +59,42 @@ router.get('/me', requireAdmin, (req, res) => {
   res.json({ admin: req.admin })
 })
 
+router.put('/password', requireAdmin, async (req, res, next) => {
+  const currentPassword = req.body?.currentPassword ?? ''
+  const newPassword = req.body?.newPassword ?? ''
+  const key = `password:${req.admin.id}`
+
+  const errors = {}
+  if (!currentPassword) errors.currentPassword = 'Le mot de passe actuel est requis.'
+  if (newPassword.length < 8) errors.newPassword = 'Le nouveau mot de passe doit contenir au moins 8 caractères.'
+  else if (newPassword.length > 72) errors.newPassword = 'Le mot de passe ne doit pas dépasser 72 caractères.'
+  else if (newPassword === currentPassword) errors.newPassword = 'Le nouveau mot de passe doit être différent de l’actuel.'
+  if (Object.keys(errors).length) {
+    return res.status(422).json({ message: 'Veuillez corriger les champs indiqués.', errors })
+  }
+  if (isLocked(key)) {
+    return res.status(429).json({ message: 'Trop de tentatives. Réessayez dans quelques minutes.' })
+  }
+
+  try {
+    const [rows] = await pool.query('SELECT password_hash FROM admins WHERE id = ?', [req.admin.id])
+    if (!rows.length) return res.status(401).json({ message: 'Compte introuvable.' })
+
+    if (!(await bcrypt.compare(currentPassword, rows[0].password_hash))) {
+      recordFailure(key)
+      return res.status(422).json({
+        message: 'Le mot de passe actuel est incorrect.',
+        errors: { currentPassword: 'Mot de passe actuel incorrect.' },
+      })
+    }
+
+    failures.delete(key)
+    const hash = await bcrypt.hash(newPassword, 10)
+    await pool.query('UPDATE admins SET password_hash = ? WHERE id = ?', [hash, req.admin.id])
+    res.json({ message: 'Mot de passe modifié avec succès.' })
+  } catch (err) {
+    next(err)
+  }
+})
+
 export default router

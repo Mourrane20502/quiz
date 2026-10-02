@@ -1,24 +1,19 @@
-import ministryLogo from '../assets/event/ministry-logo.png'
-import airshowLogo from '../assets/event/airshow-logo.png'
-import assadLogo from '../assets/event/assad-logo.png'
+import PartnerLogos from './PartnerLogos.jsx'
 
 function EventHeader({ compact = false }) {
   if (compact) {
     return (
-      <header className="flex items-center justify-center py-3">
-        <img src={airshowLogo} alt="Marrakech Airshow 2026" className="h-12 w-auto" />
+      <header className="flex justify-center py-2">
+        <div className="rounded-full bg-white/90 px-4 py-1.5 shadow-sm ring-1 ring-navy/10 backdrop-blur">
+          <PartnerLogos size="sm" />
+        </div>
       </header>
     )
   }
 
   return (
-    <header className="flex items-center justify-between gap-3">
-      <img
-        src={ministryLogo}
-        alt="Royaume du Maroc - Ministère de l'Industrie et du Commerce"
-        className="h-10 w-auto sm:h-14"
-      />
-      <img src={assadLogo} alt="ASSAD" className="h-12 w-auto sm:h-16" />
+    <header className="rounded-2xl bg-white/90 px-3 py-3 shadow-md ring-1 ring-navy/10 backdrop-blur">
+      <PartnerLogos size="md" />
     </header>
   )
 }

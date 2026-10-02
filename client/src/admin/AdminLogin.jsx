@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Lock, LogIn, User } from 'lucide-react'
 import api, { auth, errorMessage } from './api.js'
-import airshowLogo from '../assets/event/airshow-logo.png'
+import airshowLogo from '../assets/logos/marrakech-airshow.png'
 import jets from '../assets/event/jets-cutout.png'
 
 function AdminLogin() {

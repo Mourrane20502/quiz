@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { QRCodeSVG } from 'qrcode.react'
-import airshowLogo from '../assets/event/airshow-logo.png'
+import PartnerLogos from '../components/PartnerLogos.jsx'
 import airshowStar from '../assets/event/airshow-star.png'
 import jets from '../assets/event/jets-cutout.png'
 import { event } from '../data/event.js'
@@ -183,9 +183,11 @@ function Home() {
       <div className="pointer-events-none absolute -right-40 -top-40 h-[40rem] w-[40rem] rounded-full bg-white/60 blur-3xl" />
       <Contrails />
 
-      <header className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between px-6 pt-6 lg:px-10">
-        <img src={airshowLogo} alt={event.name} className="h-14 w-auto drop-shadow-sm sm:h-16" />
-        <div className="flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-widest text-navy shadow-sm ring-1 ring-navy/10 backdrop-blur">
+      <header className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center gap-3 px-4 pt-5 sm:flex-row sm:justify-between sm:px-6 lg:px-10">
+        <div className="w-full rounded-2xl bg-white/90 px-4 py-3 shadow-md ring-1 ring-navy/10 backdrop-blur sm:w-auto sm:px-6">
+          <PartnerLogos size="lg" />
+        </div>
+        <div className="flex shrink-0 items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-widest text-navy shadow-sm ring-1 ring-navy/10 backdrop-blur">
           <span className="relative flex h-2.5 w-2.5">
             {open && (
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-morocco-red opacity-75" />
@@ -206,7 +208,7 @@ function Home() {
             {event.day}
           </div>
 
-          <h1 className="mt-6 font-display text-5xl font-extrabold leading-[1.05] text-navy sm:text-6xl xl:text-7xl">
+          <h1 className="mt-6 font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-navy sm:text-6xl xl:text-7xl">
             Prenez votre envol,
             <span className="block bg-gradient-to-r from-morocco-red via-gold to-morocco-green bg-clip-text text-transparent">
               testez vos connaissances.
