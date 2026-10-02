@@ -6,24 +6,25 @@ import multer from 'multer'
 import pool, { isQuizActive } from '../config/db.js'
 import { uploadAvatar, UPLOAD_DIR, avatarUrl } from '../middleware/upload.js'
 import { getActiveQuestions } from '../services/scoring.js'
+import { normalizePhone } from '../utils/phone.js'
 
 const router = Router()
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const PHONE_REGEX = /^\+?[0-9\s.-]{8,20}$/
+const PHONE_REGEX = /^\+?[0-9]{8,15}$/
 
 const toPublic = (row) => ({
   id: row.id,
   fullName: row.full_name,
-  email: row.email,
+  school: row.school,
   phone: row.phone,
   avatar: avatarUrl(row.avatar),
 })
 
-function validate({ fullName, email, phone }) {
+function validate({ fullName, school, phone }) {
   const errors = {}
   if (!fullName || fullName.length < 3) errors.fullName = 'Le nom complet est requis (3 caractères min).'
-  if (!email || !EMAIL_REGEX.test(email)) errors.email = 'Adresse e-mail invalide.'
+  if (!school || school.length < 2) errors.school = 'Le nom de votre école est requis.'
+  else if (school.length > 190) errors.school = 'Le nom de l’école est trop long (190 caractères max).'
   if (!phone || !PHONE_REGEX.test(phone)) errors.phone = 'Numéro de téléphone invalide.'
   return errors
 }
@@ -47,8 +48,8 @@ function handleUpload(req, res, next) {
 router.post('/', handleUpload, async (req, res, next) => {
   const data = {
     fullName: req.body.fullName?.trim(),
-    email: req.body.email?.trim().toLowerCase(),
-    phone: req.body.phone?.trim(),
+    school: req.body.school?.trim().replace(/\s+/g, ' '),
+    phone: normalizePhone(req.body.phone?.trim()),
   }
   const avatar = req.file?.filename ?? null
 
@@ -70,26 +71,26 @@ router.post('/', handleUpload, async (req, res, next) => {
     const [existing] = await pool.query(
       `SELECT p.*, a.id AS attempt_id, a.status AS attempt_status, a.token
        FROM participants p LEFT JOIN quiz_attempts a ON a.participant_id = p.id
-       WHERE p.email = ?`,
-      [data.email],
+       WHERE p.phone = ?`,
+      [data.phone],
     )
     const current = existing[0]
 
     if (current?.attempt_status === 'completed') {
-      return reject(409, { message: 'Vous avez déjà participé au quiz avec cette adresse e-mail. Merci !' })
+      return reject(409, { message: 'Vous avez déjà participé au quiz avec ce numéro de téléphone. Merci !' })
     }
 
     let participantId = current?.id
     if (current) {
       await pool.query(
-        'UPDATE participants SET full_name = ?, phone = ?, avatar = COALESCE(?, avatar) WHERE id = ?',
-        [data.fullName, data.phone, avatar, current.id],
+        'UPDATE participants SET full_name = ?, school = ?, avatar = COALESCE(?, avatar) WHERE id = ?',
+        [data.fullName, data.school, avatar, current.id],
       )
       if (avatar && current.avatar) await removeFile(current.avatar)
     } else {
       const [result] = await pool.query(
-        'INSERT INTO participants (full_name, email, phone, avatar) VALUES (?, ?, ?, ?)',
-        [data.fullName, data.email, data.phone, avatar],
+        'INSERT INTO participants (full_name, school, phone, avatar) VALUES (?, ?, ?, ?)',
+        [data.fullName, data.school, data.phone, avatar],
       )
       participantId = result.insertId
     }

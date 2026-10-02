@@ -21,7 +21,7 @@ const STEPS = [
   },
   {
     title: 'Inscrivez-vous',
-    text: 'Nom, e-mail, téléphone et, si vous le souhaitez, une photo.',
+    text: 'Nom, école, téléphone et, si vous le souhaitez, une photo.',
     icon: (
       <>
         <circle cx="12" cy="8" r="3.5" />

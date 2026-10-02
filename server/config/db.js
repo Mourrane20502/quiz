@@ -3,6 +3,7 @@ import path from 'node:path'
 import bcrypt from 'bcryptjs'
 import mysql from 'mysql2/promise'
 import seedQuestions from '../data/questions.js'
+import { normalizePhone } from '../utils/phone.js'
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
@@ -29,6 +30,46 @@ async function runSchema() {
   for (const statement of statements) await pool.query(statement)
 }
 
+async function columnExists(table, column) {
+  const [rows] = await pool.query(
+    'SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?',
+    [table, column],
+  )
+  return rows.length > 0
+}
+
+async function phoneIsUnique() {
+  const [rows] = await pool.query(
+    `SELECT 1 FROM information_schema.STATISTICS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'participants' AND COLUMN_NAME = 'phone' AND NON_UNIQUE = 0`,
+  )
+  return rows.length > 0
+}
+
+async function migrateEmailToSchool() {
+  if (!(await columnExists('participants', 'school'))) {
+    await pool.query("ALTER TABLE participants ADD COLUMN school VARCHAR(190) NOT NULL DEFAULT '' AFTER full_name")
+  }
+  if (await columnExists('participants', 'email')) {
+    await pool.query('ALTER TABLE participants DROP COLUMN email')
+  }
+  if (await phoneIsUnique()) return
+
+  const [rows] = await pool.query('SELECT id, phone FROM participants')
+  for (const row of rows) {
+    const phone = normalizePhone(row.phone)
+    if (phone !== row.phone) await pool.query('UPDATE participants SET phone = ? WHERE id = ?', [phone, row.id])
+  }
+
+  try {
+    await pool.query('ALTER TABLE participants ADD UNIQUE KEY uq_participants_phone (phone)')
+  } catch (err) {
+    if (err.code !== 'ER_DUP_ENTRY') throw err
+    console.warn('Migration: duplicate phone numbers found, unique index on participants.phone not created')
+  }
+  console.log('Migrated participants: email column replaced by school')
+}
+
 async function seed() {
   const [[{ count }]] = await pool.query('SELECT COUNT(*) AS count FROM questions')
   if (count === 0) {
@@ -53,6 +94,7 @@ async function seed() {
 
 export async function initDb() {
   await runSchema()
+  await migrateEmailToSchool()
   await seed()
 }
 

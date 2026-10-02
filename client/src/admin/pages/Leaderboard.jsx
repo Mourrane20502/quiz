@@ -102,7 +102,7 @@ function Leaderboard() {
                             <Avatar src={p.avatar} name={p.fullName} />
                             <div className="min-w-0">
                               <p className="truncate font-semibold text-slate-800">{p.fullName}</p>
-                              <p className="truncate text-xs text-slate-500">{p.email}</p>
+                              <p className="truncate text-xs text-slate-500">{p.school}</p>
                             </div>
                           </div>
                         </td>

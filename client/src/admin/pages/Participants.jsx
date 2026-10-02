@@ -76,7 +76,7 @@ function Participants() {
               type="search"
               value={filters.search}
               onChange={update('search')}
-              placeholder="Rechercher par nom, e-mail ou téléphone…"
+              placeholder="Rechercher par nom, école ou téléphone…"
               className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm shadow-sm placeholder:text-slate-400 focus:border-gold focus:outline-none focus:ring-4 focus:ring-gold/15"
             />
           </div>
@@ -151,7 +151,7 @@ function Participants() {
                           <Avatar src={p.avatar} name={p.fullName} />
                           <div className="min-w-0">
                             <p className="truncate font-semibold text-slate-800">{p.fullName}</p>
-                            <p className="truncate text-xs text-slate-500">{p.email}</p>
+                            <p className="truncate text-xs text-slate-500">{p.school}</p>
                           </div>
                         </div>
                       </td>

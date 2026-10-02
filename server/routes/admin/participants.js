@@ -20,7 +20,7 @@ function buildFilters(query) {
 
   const search = query.search?.trim()
   if (search) {
-    where.push('(p.full_name LIKE ? OR p.email LIKE ? OR p.phone LIKE ?)')
+    where.push('(p.full_name LIKE ? OR p.school LIKE ? OR p.phone LIKE ?)')
     const like = `%${search}%`
     params.push(like, like, like)
   }
@@ -48,7 +48,7 @@ function buildFilters(query) {
 }
 
 const BASE_SELECT = `
-  SELECT p.id, p.full_name, p.email, p.phone, p.avatar, p.created_at,
+  SELECT p.id, p.full_name, p.school, p.phone, p.avatar, p.created_at,
          a.status, a.score, a.total_questions, a.answered_count, a.total_time_ms, a.completed_at
   FROM participants p
   LEFT JOIN quiz_attempts a ON a.participant_id = p.id`
@@ -56,7 +56,7 @@ const BASE_SELECT = `
 const toRow = (r) => ({
   id: r.id,
   fullName: r.full_name,
-  email: r.email,
+  school: r.school,
   phone: r.phone,
   avatar: avatarUrl(r.avatar),
   createdAt: r.created_at,
@@ -111,7 +111,7 @@ router.get('/export', async (req, res, next) => {
     const columns = [
       { header: 'ID', key: 'id', width: 8 },
       { header: 'Nom et prénom', key: 'fullName', width: 28 },
-      { header: 'E-mail', key: 'email', width: 32 },
+      { header: 'École', key: 'school', width: 32 },
       { header: 'Téléphone', key: 'phone', width: 18 },
       { header: 'Statut', key: 'status', width: 12 },
       { header: 'Score', key: 'score', width: 8 },
@@ -125,7 +125,7 @@ router.get('/export', async (req, res, next) => {
     const data = rows.map((r) => ({
       id: r.id,
       fullName: r.full_name,
-      email: r.email,
+      school: r.school,
       phone: r.phone,
       status: STATUS_LABELS[r.status ?? 'registered'],
       score: r.status === 'completed' ? r.score : '',

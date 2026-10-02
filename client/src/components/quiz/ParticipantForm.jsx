@@ -21,7 +21,7 @@ function Field({ id, label, error, children }) {
 }
 
 function ParticipantForm({ onRegistered, onBack }) {
-  const [form, setForm] = useState({ fullName: '', email: '', phone: '' })
+  const [form, setForm] = useState({ fullName: '', school: '', phone: '' })
   const [avatar, setAvatar] = useState(null)
   const [errors, setErrors] = useState({})
   const [message, setMessage] = useState('')
@@ -139,17 +139,17 @@ function ParticipantForm({ onRegistered, onBack }) {
             />
           </Field>
 
-          <Field id="email" label="Adresse e-mail" error={errors.email}>
+          <Field id="school" label="École" error={errors.school}>
             <input
-              id="email"
-              type="email"
-              inputMode="email"
-              value={form.email}
-              onChange={update('email')}
-              placeholder="exemple@email.com"
-              autoComplete="email"
+              id="school"
+              type="text"
+              value={form.school}
+              onChange={update('school')}
+              placeholder="Ex : ENSA Marrakech"
+              autoComplete="organization"
+              maxLength={190}
               required
-              className={`${inputClass} ${borderFor('email')}`}
+              className={`${inputClass} ${borderFor('school')}`}
             />
           </Field>
 
