@@ -5,7 +5,7 @@ import { Router } from 'express'
 import multer from 'multer'
 import pool, { isQuizActive } from '../config/db.js'
 import { uploadAvatar, UPLOAD_DIR, avatarUrl } from '../middleware/upload.js'
-import { getActiveQuestions } from '../services/scoring.js'
+import { countAllQuestions } from '../services/scoring.js'
 import { normalizePhone } from '../utils/phone.js'
 
 const router = Router()
@@ -105,11 +105,10 @@ router.post('/', handleUpload, async (req, res, next) => {
       answeredIds = answered.map((r) => r.question_id)
     } else {
       token = crypto.randomBytes(32).toString('hex')
-      const questions = await getActiveQuestions()
       await pool.query('INSERT INTO quiz_attempts (participant_id, token, total_questions) VALUES (?, ?, ?)', [
         participantId,
         token,
-        questions.length,
+        await countAllQuestions(),
       ])
     }
 

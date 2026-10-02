@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { AlertTriangle, ArrowDown, ArrowUp, CheckCircle2, ListChecks, Pencil, Plus, Timer, Trash2, X } from 'lucide-react'
+import { AlertTriangle, ArrowDown, ArrowUp, CheckCircle2, ListChecks, Pencil, Plus, Radio, Timer, Trash2, X } from 'lucide-react'
 import api, { errorMessage } from '../api.js'
 import { usePolling } from '../hooks.js'
 import { Button, Card, EmptyState, PageHeader, Toggle } from '../components/ui.jsx'
@@ -250,6 +250,18 @@ function Questions() {
       </PageHeader>
 
       {error && <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-morocco-red">{error}</p>}
+
+      {data?.length > 0 && activeCount < data.length && (
+        <div className="mb-4 flex gap-3 rounded-xl border border-sky/30 bg-sky/5 px-4 py-3 text-sm text-slate-700">
+          <Radio className="mt-0.5 h-4 w-4 shrink-0 text-sky" />
+          <p>
+            <span className="font-semibold text-navy">Mode direct :</span> {data.length - activeCount} question(s)
+            inactive(s). Les participants qui ont répondu aux {activeCount} question(s) active(s) restent en attente :
+            chaque question que vous activez leur est envoyée automatiquement. Le quiz se termine pour eux une fois les{' '}
+            {data.length} questions répondues (supprimez une question pour la retirer du total).
+          </p>
+        </div>
+      )}
 
       {loading && !data ? (
         <div className="h-72 animate-pulse rounded-2xl bg-white ring-1 ring-slate-200/70" />

@@ -24,6 +24,25 @@ export async function getActiveQuestions({ withAnswers = false } = {}) {
   }))
 }
 
+export async function countAllQuestions() {
+  const [[{ total }]] = await pool.query('SELECT COUNT(*) AS total FROM questions')
+  return total
+}
+
+export async function syncAttemptsWithQuestionCount() {
+  const total = await countAllQuestions()
+  await pool.query("UPDATE quiz_attempts SET total_questions = ? WHERE status = 'in_progress'", [total])
+  await pool.query("UPDATE quiz_attempts SET total_questions = ? WHERE status = 'completed' AND total_questions > ?", [
+    total,
+    total,
+  ])
+  if (total === 0) return
+  await pool.query(
+    "UPDATE quiz_attempts SET status = 'completed', completed_at = NOW() WHERE status = 'in_progress' AND answered_count >= ?",
+    [total],
+  )
+}
+
 export async function refreshAttemptTotals(attemptIds = null) {
   const where = attemptIds ? 'WHERE a.id IN (?)' : ''
   if (attemptIds && attemptIds.length === 0) return

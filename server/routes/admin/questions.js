@@ -1,6 +1,11 @@
 import { Router } from 'express'
 import pool from '../../config/db.js'
-import { parseOptions, refreshAttemptTotals, rescoreQuestion } from '../../services/scoring.js'
+import {
+  parseOptions,
+  refreshAttemptTotals,
+  rescoreQuestion,
+  syncAttemptsWithQuestionCount,
+} from '../../services/scoring.js'
 
 const router = Router()
 
@@ -70,6 +75,7 @@ router.post('/', async (req, res, next) => {
       'INSERT INTO questions (question, type, options, correct_index, time_limit, position) VALUES (?, ?, ?, ?, ?, ?)',
       [value.question, value.type, JSON.stringify(value.options), value.correctIndex, value.timeLimit, nextPosition],
     )
+    await syncAttemptsWithQuestionCount()
     res.status(201).json(await findQuestion(result.insertId))
   } catch (err) {
     next(err)
@@ -139,6 +145,7 @@ router.delete('/:id', async (req, res, next) => {
     const [result] = await pool.query('DELETE FROM questions WHERE id = ?', [req.params.id])
     if (!result.affectedRows) return res.status(404).json({ message: 'Question introuvable.' })
     await refreshAttemptTotals()
+    await syncAttemptsWithQuestionCount()
     res.status(204).end()
   } catch (err) {
     next(err)

@@ -111,14 +111,14 @@ function QuestionCard({ question, onAnswer }) {
   )
 }
 
-function QuizQuestions({ questions, alreadyAnswered = 0, onAnswered, onFinish, submitting }) {
+function QuizQuestions({ questions, answeredCount = 0, total, onAnswered, onQueueEnd, submitting }) {
   const [current, setCurrent] = useState(0)
   const answers = useRef([])
 
   const question = questions[current]
   const isLast = current === questions.length - 1
-  const totalCount = questions.length + alreadyAnswered
-  const position = alreadyAnswered + current + 1
+  const position = answeredCount + current + 1
+  const totalCount = Math.max(total, position)
   const progress = (position / totalCount) * 100
 
   const handleAnswer = useCallback(
@@ -126,10 +126,10 @@ function QuizQuestions({ questions, alreadyAnswered = 0, onAnswered, onFinish, s
       const answer = { questionId: question.id, selectedIndex: choice, responseTimeMs }
       answers.current = [...answers.current, answer]
       onAnswered?.(answer)
-      if (isLast) onFinish(answers.current)
+      if (isLast) onQueueEnd(answers.current)
       else setCurrent((c) => c + 1)
     },
-    [question.id, isLast, onAnswered, onFinish],
+    [question.id, isLast, onAnswered, onQueueEnd],
   )
 
   return (
