@@ -5,6 +5,7 @@ import Quiz from './pages/Quiz.jsx'
 import PublicContent from './content/PublicContent.jsx'
 
 const PublicBoard = lazy(() => import('./pages/PublicBoard.jsx'))
+const FollowHome = lazy(() => import('./pages/FollowHome.jsx'))
 
 const AdminLogin = lazy(() => import('./admin/AdminLogin.jsx'))
 const AdminLayout = lazy(() => import('./admin/AdminLayout.jsx'))
@@ -32,6 +33,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/public" element={<PublicBoard />} />
+          <Route path="/suivi" element={<FollowHome />} />
         </Route>
 
         <Route path="/admin">

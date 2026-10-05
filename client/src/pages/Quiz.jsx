@@ -3,6 +3,7 @@ import axios from 'axios'
 import SkyBackground from '../components/SkyBackground.jsx'
 import EventIntro from '../components/quiz/EventIntro.jsx'
 import ParticipantForm from '../components/quiz/ParticipantForm.jsx'
+import QuizTutorial from '../components/quiz/QuizTutorial.jsx'
 import QuizRules from '../components/quiz/QuizRules.jsx'
 import QuizQuestions from '../components/quiz/QuizQuestions.jsx'
 import QuizWaiting from '../components/quiz/QuizWaiting.jsx'
@@ -13,7 +14,7 @@ import { useLeaveGuard } from '../components/quiz/useLeaveGuard.js'
 const CLOSED_POLL_MS = 15000
 const WAITING_POLL_MS = 4000
 const NOTICE_MS = 4000
-const GUARDED_STEPS = ['resuming', 'rules', 'questions', 'waiting']
+const GUARDED_STEPS = ['resuming', 'tutorial', 'rules', 'questions', 'waiting']
 
 async function postWithRetry(url, body, attempts = 3) {
   for (let i = 1; ; i++) {
@@ -144,7 +145,7 @@ function Quiz() {
     setParticipant(registered)
     setToken(attempt.token)
     saveSession({ token: attempt.token, participant: registered, pendingQuestionId: null })
-    setStep('rules')
+    setStep('tutorial')
   }
 
   const markQuestionShown = useCallback((questionId) => saveSession({ pendingQuestionId: questionId }), [])
@@ -188,6 +189,8 @@ function Quiz() {
       {step === 'resuming' && (
         <p className="mt-16 text-center font-semibold text-navy">Reprise de votre quiz…</p>
       )}
+
+      {step === 'tutorial' && <QuizTutorial participant={participant} onFinish={() => setStep('rules')} />}
 
       {step === 'rules' && <QuizRules participant={participant} onAccept={() => sync([], token)} loading={submitting} />}
 
