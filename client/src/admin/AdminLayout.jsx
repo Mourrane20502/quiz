@@ -7,6 +7,7 @@ import {
   ListChecks,
   LogOut,
   Menu,
+  PanelsTopLeft,
   Settings,
   Trophy,
   Users,
@@ -22,6 +23,7 @@ const NAV = [
   { to: '/admin/classement', label: 'Classement', icon: Trophy },
   { to: '/admin/statistiques', label: 'Statistiques', icon: BarChart3 },
   { to: '/admin/questions', label: 'Gestion des questions', icon: ListChecks },
+  { to: '/admin/b2c', label: 'Gestion B2C', icon: PanelsTopLeft },
   { to: '/admin/parametres', label: 'Paramètres', icon: Settings },
 ]
 

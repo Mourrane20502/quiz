@@ -66,6 +66,12 @@ CREATE TABLE IF NOT EXISTS attempt_answers (
   CONSTRAINT fk_answer_question FOREIGN KEY (question_id) REFERENCES questions (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS site_content (
+  content_key VARCHAR(50) PRIMARY KEY,
+  content_value TEXT NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS settings (
   setting_key VARCHAR(50) PRIMARY KEY,
   setting_value VARCHAR(255) NOT NULL,

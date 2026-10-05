@@ -5,35 +5,22 @@ import { QRCodeSVG } from 'qrcode.react'
 import PartnerLogos from '../components/PartnerLogos.jsx'
 import airshowStar from '../assets/event/airshow-star.png'
 import jets from '../assets/event/jets-cutout.png'
-import { event } from '../data/event.js'
+import { useContent } from '../content/ContentContext.js'
 
 const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname)
 const baseUrl = import.meta.env.VITE_APP_URL || (isLocalhost ? __LAN_URL__ : window.location.origin)
 const quizUrl = `${baseUrl.replace(/\/$/, '')}/quiz`
 
-const STEPS = [
-  {
-    title: 'Scannez',
-    text: 'Pointez l’appareil photo de votre téléphone vers le QR code.',
-    icon: (
-      <path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M8 8h3v3H8zM13 13h3v3h-3zM13 8h3M8 16h3" />
-    ),
-  },
-  {
-    title: 'Inscrivez-vous',
-    text: 'Nom, école, téléphone et, si vous le souhaitez, une photo.',
-    icon: (
-      <>
-        <circle cx="12" cy="8" r="3.5" />
-        <path d="M5 20c.8-3.4 3.6-5.5 7-5.5s6.2 2.1 7 5.5" />
-      </>
-    ),
-  },
-  {
-    title: 'Décollez',
-    text: 'Répondez vite et juste : chaque question est chronométrée.',
-    icon: <path d="M21 4 3 11l7 2.5L12.5 21 21 4ZM10 13.5 21 4" />,
-  },
+const STEP_ICONS = [
+  <path
+    key="scan"
+    d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M8 8h3v3H8zM13 13h3v3h-3zM13 8h3M8 16h3"
+  />,
+  <g key="user">
+    <circle cx="12" cy="8" r="3.5" />
+    <path d="M5 20c.8-3.4 3.6-5.5 7-5.5s6.2 2.1 7 5.5" />
+  </g>,
+  <path key="plane" d="M21 4 3 11l7 2.5L12.5 21 21 4ZM10 13.5 21 4" />,
 ]
 
 function Contrails() {
@@ -107,7 +94,7 @@ function QrCard() {
             <p className="mt-1 font-display text-2xl font-bold text-navy">Scannez pour jouer</p>
           </div>
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-navy text-white">
-            <StepIcon>{STEPS[0].icon}</StepIcon>
+            <StepIcon>{STEP_ICONS[0]}</StepIcon>
           </span>
         </div>
 
@@ -155,7 +142,13 @@ function QrCard() {
 }
 
 function Home() {
+  const content = useContent()
   const [quizInfo, setQuizInfo] = useState(null)
+  const steps = [1, 2, 3].map((n, i) => ({
+    title: content[`step${n}Title`],
+    text: content[`step${n}Text`],
+    icon: STEP_ICONS[i],
+  }))
 
   useEffect(() => {
     const load = () =>
@@ -205,23 +198,20 @@ function Home() {
               <span className="flex-1 bg-morocco-red" />
               <span className="flex-1 bg-morocco-green" />
             </span>
-            {event.day}
+            {content.eventDay}
           </div>
 
-          <h1 className="mt-6 font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-navy sm:text-6xl xl:text-7xl">
-            Prenez votre envol,
+          <h1 className="mt-6 break-words font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-navy sm:text-6xl xl:text-7xl">
+            {content.homeTitle}
             <span className="block bg-gradient-to-r from-morocco-red via-gold to-morocco-green bg-clip-text text-transparent">
-              testez vos connaissances.
+              {content.homeTitleHighlight}
             </span>
           </h1>
 
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-navy/75">
-            Le quiz officiel de la {event.day} du {event.name}. Aéronautique, industrie et culture du salon :
-            relevez le défi depuis votre téléphone.
-          </p>
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-navy/75">{content.homeDescription}</p>
 
           <ol className="mt-10 grid gap-4 sm:grid-cols-3">
-            {STEPS.map((step, i) => (
+            {steps.map((step, i) => (
               <li
                 key={step.title}
                 className="group relative rounded-2xl bg-white/75 p-5 shadow-sm ring-1 ring-navy/10 backdrop-blur transition hover:-translate-y-1 hover:bg-white hover:shadow-lg"
@@ -261,8 +251,10 @@ function Home() {
         <div className="relative bg-navy">
           <div className="h-1 bg-gradient-to-r from-morocco-red via-gold to-morocco-green" />
           <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-6 py-4 text-xs text-white/70 sm:flex-row lg:px-10">
-            <span className="font-semibold uppercase tracking-[0.2em] text-white">{event.name}</span>
-            <span>{event.day} · {event.location}</span>
+            <span className="font-semibold uppercase tracking-[0.2em] text-white">{content.eventName}</span>
+            <span>
+              {content.eventDay} · {content.eventLocation}
+            </span>
           </div>
         </div>
       </footer>

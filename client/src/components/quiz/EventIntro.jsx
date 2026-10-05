@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { Plane } from 'lucide-react'
 import EventHeader from '../EventHeader.jsx'
 import jets from '../../assets/event/jets-cutout.png'
-import { event } from '../../data/event.js'
+import { useContent } from '../../content/ContentContext.js'
 
 function ReadyDialog({ questionCount, onConfirm, onCancel }) {
   const confirmRef = useRef(null)
@@ -75,6 +75,7 @@ function InfoItem({ label, value }) {
 }
 
 function EventIntro({ onStart, loaded, active, questionCount }) {
+  const content = useContent()
   const closed = loaded && !active
   const [confirming, setConfirming] = useState(false)
   const cancelConfirm = useCallback(() => setConfirming(false), [])
@@ -90,34 +91,34 @@ function EventIntro({ onStart, loaded, active, questionCount }) {
       />
 
       <section className="mt-6 text-center">
-        <h1 className="font-display text-4xl font-bold uppercase tracking-wide text-navy">Quiz</h1>
+        <h1 className="break-words font-display text-4xl font-bold uppercase tracking-wide text-navy">
+          {content.quizTitle}
+        </h1>
         <div className="mx-auto mt-2 flex items-center justify-center gap-2">
-          <span className="h-px w-12 bg-navy/60" />
+          <span className="h-px w-12 shrink-0 bg-navy/60" />
           <p className="font-display text-sm font-semibold uppercase tracking-[0.3em] text-navy">
-            {event.day}
+            {content.eventDay}
           </p>
-          <span className="h-px w-12 bg-navy/60" />
+          <span className="h-px w-12 shrink-0 bg-navy/60" />
         </div>
         <div className="mx-auto mt-3 flex h-1 w-24 overflow-hidden rounded-full">
           <span className="flex-1 bg-morocco-red" />
           <span className="flex-1 bg-navy" />
           <span className="flex-1 bg-morocco-green" />
         </div>
-        <p className="mt-4 text-sm leading-relaxed text-navy/80">{event.description}</p>
+        <p className="mt-4 text-sm leading-relaxed text-navy/80">{content.quizDescription}</p>
       </section>
 
       <section className="mt-5 grid grid-cols-3 gap-2">
-        <InfoItem label="Date" value={event.date} />
-        <InfoItem label="Lieu" value="Marrakech" />
+        <InfoItem label="Date" value={content.eventDate} />
+        <InfoItem label="Lieu" value={content.eventCity} />
         <InfoItem label="Questions" value={questionCount ?? '—'} />
       </section>
 
       {closed ? (
         <div className="mt-6 rounded-xl border border-gold/40 bg-white/85 px-4 py-4 text-center shadow-sm">
-          <p className="font-semibold text-navy">Le quiz n’est pas encore ouvert</p>
-          <p className="mt-1 text-xs text-navy/60">
-            Restez sur cette page : elle se mettra à jour automatiquement dès l’ouverture.
-          </p>
+          <p className="font-semibold text-navy">{content.quizClosedTitle}</p>
+          <p className="mt-1 text-xs text-navy/60">{content.quizClosedText}</p>
         </div>
       ) : (
         <button
@@ -131,7 +132,7 @@ function EventIntro({ onStart, loaded, active, questionCount }) {
       )}
 
       <p className="mt-4 text-center text-[11px] text-navy/60">
-        Organisé par {event.organizer} avec le {event.partner}
+        Organisé par {content.organizer} avec le {content.partner}
       </p>
 
       {confirming && !closed && (

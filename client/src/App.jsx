@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Home from './pages/Home.jsx'
 import Quiz from './pages/Quiz.jsx'
+import PublicContent from './content/PublicContent.jsx'
 
 const AdminLogin = lazy(() => import('./admin/AdminLogin.jsx'))
 const AdminLayout = lazy(() => import('./admin/AdminLayout.jsx'))
@@ -11,6 +12,7 @@ const Leaderboard = lazy(() => import('./admin/pages/Leaderboard.jsx'))
 const QuestionStats = lazy(() => import('./admin/pages/QuestionStats.jsx'))
 const Questions = lazy(() => import('./admin/pages/Questions.jsx'))
 const Settings = lazy(() => import('./admin/pages/Settings.jsx'))
+const ContentManager = lazy(() => import('./admin/pages/ContentManager.jsx'))
 
 function PageLoader() {
   return (
@@ -24,8 +26,10 @@ function App() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/quiz" element={<Quiz />} />
+        <Route element={<PublicContent />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/quiz" element={<Quiz />} />
+        </Route>
 
         <Route path="/admin">
           <Route index element={<AdminLogin />} />
@@ -35,6 +39,7 @@ function App() {
             <Route path="classement" element={<Leaderboard />} />
             <Route path="statistiques" element={<QuestionStats />} />
             <Route path="questions" element={<Questions />} />
+            <Route path="b2c" element={<ContentManager />} />
             <Route path="parametres" element={<Settings />} />
             <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
           </Route>

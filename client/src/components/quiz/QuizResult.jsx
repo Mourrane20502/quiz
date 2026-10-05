@@ -1,7 +1,9 @@
 import EventHeader from '../EventHeader.jsx'
-import { event } from '../../data/event.js'
+import { useContent } from '../../content/ContentContext.js'
 
 function QuizResult({ participant }) {
+  const content = useContent()
+
   return (
     <div className="flex flex-1 flex-col animate-fade-up">
       <EventHeader compact />
@@ -20,12 +22,9 @@ function QuizResult({ participant }) {
             </svg>
           </div>
         )}
-        <p className="text-xs font-semibold uppercase tracking-widest text-gold">{event.day}</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-gold">{content.eventDay}</p>
         <h1 className="mt-2 font-display text-2xl font-bold text-navy">Merci {participant.fullName} !</h1>
-        <p className="mt-3 text-sm leading-relaxed text-navy/75">
-          Vos réponses ont bien été enregistrées. Les résultats et le classement seront annoncés par les
-          organisateurs.
-        </p>
+        <p className="mt-3 text-sm leading-relaxed text-navy/75">{content.thankYouText}</p>
 
         <div className="mx-auto mt-5 flex h-1 w-24 overflow-hidden rounded-full">
           <span className="flex-1 bg-morocco-red" />
@@ -33,7 +32,7 @@ function QuizResult({ participant }) {
           <span className="flex-1 bg-morocco-green" />
         </div>
 
-        <p className="mt-4 text-xs text-navy/60">{event.name}</p>
+        <p className="mt-4 text-xs text-navy/60">{content.eventName}</p>
       </section>
     </div>
   )

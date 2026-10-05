@@ -6,6 +6,7 @@ import { initDb } from './config/db.js'
 import quizRoutes from './routes/quiz.js'
 import participantRoutes from './routes/participants.js'
 import adminRoutes from './routes/admin/index.js'
+import contentRoutes from './routes/content.js'
 import { UPLOADS_ROOT } from './middleware/upload.js'
 
 const app = express()
@@ -22,6 +23,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/quiz', quizRoutes)
 app.use('/api/participants', participantRoutes)
+app.use('/api/content', contentRoutes)
 app.use('/api/admin', adminRoutes)
 
 app.use((err, req, res, next) => {
