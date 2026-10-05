@@ -3,12 +3,15 @@ import EventHeader from '../EventHeader.jsx'
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F']
 const TICK_MS = 100
+const BLUR_GRACE_MS = 1500
+const SKIPPED_NOTICE_MS = 2500
 
 function QuestionCard({ question, onShown, onAnswer }) {
   const limitMs = question.timeLimit * 1000
   const [deadline] = useState(() => Date.now() + limitMs)
   const [msLeft, setMsLeft] = useState(limitMs)
   const [selected, setSelected] = useState(undefined)
+  const [skipped, setSkipped] = useState(false)
   const answered = useRef(false)
 
   useEffect(() => {
@@ -26,6 +29,45 @@ function QuestionCard({ question, onShown, onAnswer }) {
     [onAnswer, deadline, limitMs],
   )
 
+  // Leaving the quiz screen (other tab, other app such as an AI assistant, minimized window)
+  // forfeits the question. The next question waits until the participant is back, so it
+  // doesn't start its timer while nobody is looking.
+  const skip = useCallback(() => {
+    if (answered.current) return
+    answered.current = true
+    setSelected(null)
+    setSkipped(true)
+
+    const advance = () => setTimeout(() => onAnswer(null, limitMs), SKIPPED_NOTICE_MS)
+    if (!document.hidden) return advance()
+    const onVisible = () => {
+      if (document.hidden) return
+      document.removeEventListener('visibilitychange', onVisible)
+      advance()
+    }
+    document.addEventListener('visibilitychange', onVisible)
+  }, [onAnswer, limitMs])
+
+  useEffect(() => {
+    let blurTimer
+    const onVisibility = () => document.hidden && skip()
+    const onBlur = () => {
+      clearTimeout(blurTimer)
+      blurTimer = setTimeout(() => !document.hasFocus() && skip(), BLUR_GRACE_MS)
+    }
+    const onFocus = () => clearTimeout(blurTimer)
+
+    document.addEventListener('visibilitychange', onVisibility)
+    window.addEventListener('blur', onBlur)
+    window.addEventListener('focus', onFocus)
+    return () => {
+      clearTimeout(blurTimer)
+      document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('blur', onBlur)
+      window.removeEventListener('focus', onFocus)
+    }
+  }, [skip])
+
   useEffect(() => {
     const id = setInterval(() => {
       if (answered.current) return clearInterval(id)
@@ -42,7 +84,7 @@ function QuestionCard({ question, onShown, onAnswer }) {
   const seconds = Math.ceil(msLeft / 1000)
   const ratio = msLeft / limitMs
   const urgent = seconds <= 5
-  const timedOut = selected === null
+  const timedOut = selected === null && !skipped
   const isTrueFalse = question.type === 'true_false'
 
   return (
@@ -110,7 +152,20 @@ function QuestionCard({ question, onShown, onAnswer }) {
             Temps écoulé !
           </p>
         )}
+
+        {skipped && (
+          <div role="alert" className="mt-4 rounded-lg bg-morocco-red/10 px-3 py-2.5 text-center text-morocco-red">
+            <p className="text-sm font-bold">Question passée</p>
+            <p className="mt-0.5 text-xs">
+              Vous avez quitté l’écran du quiz : cette question est comptée comme fausse.
+            </p>
+          </div>
+        )}
       </div>
+
+      <p className="mt-3 text-center text-[11px] text-navy/55">
+        Restez sur cet écran : changer d’onglet ou d’application fait passer la question.
+      </p>
     </div>
   )
 }

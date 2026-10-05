@@ -6,10 +6,7 @@ import PartnerLogos from '../components/PartnerLogos.jsx'
 import airshowStar from '../assets/event/airshow-star.png'
 import jets from '../assets/event/jets-cutout.png'
 import { useContent } from '../content/ContentContext.js'
-
-const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname)
-const baseUrl = import.meta.env.VITE_APP_URL || (isLocalhost ? __LAN_URL__ : window.location.origin)
-const quizUrl = `${baseUrl.replace(/\/$/, '')}/quiz`
+import { quizUrl } from '../lib/quizUrl.js'
 
 const STEP_ICONS = [
   <path

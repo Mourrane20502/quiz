@@ -10,8 +10,8 @@ const RULES = [
   },
   {
     icon: LogOut,
-    title: 'Ne quittez pas le quiz',
-    text: 'Ne fermez pas l’onglet et n’utilisez pas le bouton retour de votre téléphone.',
+    title: 'Restez sur l’écran du quiz',
+    text: 'Ouvrir un autre onglet ou une autre application (IA, recherche…), ou réduire la fenêtre, fait passer la question en cours : elle sera comptée comme fausse.',
   },
   {
     icon: Timer,

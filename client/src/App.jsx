@@ -4,6 +4,8 @@ import Home from './pages/Home.jsx'
 import Quiz from './pages/Quiz.jsx'
 import PublicContent from './content/PublicContent.jsx'
 
+const PublicBoard = lazy(() => import('./pages/PublicBoard.jsx'))
+
 const AdminLogin = lazy(() => import('./admin/AdminLogin.jsx'))
 const AdminLayout = lazy(() => import('./admin/AdminLayout.jsx'))
 const Dashboard = lazy(() => import('./admin/pages/Dashboard.jsx'))
@@ -29,6 +31,7 @@ function App() {
         <Route element={<PublicContent />}>
           <Route path="/" element={<Home />} />
           <Route path="/quiz" element={<Quiz />} />
+          <Route path="/public" element={<PublicBoard />} />
         </Route>
 
         <Route path="/admin">
