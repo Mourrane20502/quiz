@@ -4,12 +4,16 @@ import EventHeader from '../EventHeader.jsx'
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F']
 const TICK_MS = 100
 
-function QuestionCard({ question, onAnswer }) {
+function QuestionCard({ question, onShown, onAnswer }) {
   const limitMs = question.timeLimit * 1000
   const [deadline] = useState(() => Date.now() + limitMs)
   const [msLeft, setMsLeft] = useState(limitMs)
   const [selected, setSelected] = useState(undefined)
   const answered = useRef(false)
+
+  useEffect(() => {
+    onShown?.(question.id)
+  }, [question.id, onShown])
 
   const answer = useCallback(
     (choice) => {
@@ -111,7 +115,7 @@ function QuestionCard({ question, onAnswer }) {
   )
 }
 
-function QuizQuestions({ questions, answeredCount = 0, total, onAnswered, onQueueEnd, submitting }) {
+function QuizQuestions({ questions, answeredCount = 0, total, onQuestionShown, onAnswered, onQueueEnd, submitting }) {
   const [current, setCurrent] = useState(0)
   const answers = useRef([])
 
@@ -154,7 +158,7 @@ function QuizQuestions({ questions, answeredCount = 0, total, onAnswered, onQueu
       {submitting ? (
         <p className="mt-10 text-center font-semibold text-navy">Enregistrement de vos réponses…</p>
       ) : (
-        <QuestionCard key={question.id} question={question} onAnswer={handleAnswer} />
+        <QuestionCard key={question.id} question={question} onShown={onQuestionShown} onAnswer={handleAnswer} />
       )}
     </div>
   )
