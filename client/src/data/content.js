@@ -25,6 +25,12 @@ export const DEFAULT_CONTENT = {
   quizClosedTitle: 'Le quiz n’est pas encore ouvert',
   quizClosedText: 'Restez sur cette page : elle se mettra à jour automatiquement dès l’ouverture.',
 
+  logoMinistryTitle: 'Royaume du Maroc – Ministère de l’Industrie et du Commerce',
+  logoAirshowTitle: 'Marrakech Airshow 2026',
+  logoAssadTitle: 'ASSAD – Association des Salons du Spatial, de l’Aéronautique et de la Défense',
+
   thankYouText:
     'Vos réponses ont bien été enregistrées. Les résultats et le classement seront annoncés par les organisateurs.',
+
+  logos: { ministry: null, airshow: null, assad: null },
 }

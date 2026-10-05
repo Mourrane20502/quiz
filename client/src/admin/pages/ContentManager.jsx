@@ -1,7 +1,22 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CalendarDays, CheckCircle2, ExternalLink, House, ListOrdered, PartyPopper, RotateCcw, Smartphone } from 'lucide-react'
+import {
+  CalendarDays,
+  CheckCircle2,
+  ExternalLink,
+  House,
+  Image as ImageIcon,
+  ListOrdered,
+  PartyPopper,
+  RotateCcw,
+  Smartphone,
+  Upload,
+} from 'lucide-react'
 import api, { errorMessage } from '../api.js'
 import { Button, Card, CardHeader, PageHeader } from '../components/ui.jsx'
+import { LOGOS } from '../../data/logos.js'
+
+const LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp']
+const LOGO_MAX_BYTES = 2 * 1024 * 1024
 
 const SECTIONS = [
   {
@@ -111,6 +126,111 @@ function Field({ field, value, savedValue, defaultValue, max, error, onChange })
   )
 }
 
+function LogoTile({ logo, customUrl, onChange, titleField }) {
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+
+  const run = async (request) => {
+    setBusy(true)
+    setError('')
+    try {
+      const { data: payload } = await request()
+      onChange(payload.content.logos)
+    } catch (err) {
+      setError(errorMessage(err))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const pick = (e) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    if (!LOGO_TYPES.includes(file.type)) return setError('Format non supporté (PNG, JPG ou WEBP).')
+    if (file.size > LOGO_MAX_BYTES) return setError('Le logo ne doit pas dépasser 2 Mo.')
+    const body = new FormData()
+    body.append('logo', file)
+    run(() => api.post(`/content/logos/${logo.slot}`, body))
+  }
+
+  const restore = () => {
+    if (window.confirm(`Restaurer l’image d’origine du logo « ${titleField.savedValue} » ?`)) {
+      run(() => api.delete(`/content/logos/${logo.slot}`))
+    }
+  }
+
+  return (
+    <div className={`flex flex-col rounded-2xl ring-1 ring-slate-200 transition ${busy ? 'opacity-60' : ''}`}>
+      <div className="relative flex h-36 items-center justify-center rounded-t-2xl bg-[repeating-conic-gradient(#f1f5f9_0%_25%,#fff_0%_50%)] bg-[length:16px_16px] p-5">
+        <img
+          src={customUrl || logo.src}
+          alt={titleField.value}
+          title={titleField.value}
+          className="max-h-full max-w-full object-contain"
+        />
+        <span
+          className={`absolute right-3 top-3 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+            customUrl ? 'bg-gold/10 text-gold' : 'bg-white/90 text-slate-500 ring-1 ring-slate-200'
+          }`}
+        >
+          {customUrl ? 'Image personnalisée' : 'Image originale'}
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col gap-3 border-t border-slate-100 p-4">
+        <Field {...titleField} />
+        {error && <p className="text-xs text-morocco-red">{error}</p>}
+        <div className="mt-auto flex flex-wrap gap-2">
+          <label
+            className={`inline-flex cursor-pointer items-center gap-2 rounded-xl bg-navy px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-navy-dark ${
+              busy ? 'pointer-events-none' : ''
+            }`}
+          >
+            <Upload className="h-3.5 w-3.5" /> {busy ? 'Envoi…' : 'Remplacer'}
+            <input type="file" accept={LOGO_TYPES.join(',')} onChange={pick} className="hidden" disabled={busy} />
+          </label>
+          {customUrl && (
+            <Button variant="ghost" className="px-3 py-2 text-xs" onClick={restore} disabled={busy}>
+              <RotateCcw className="h-3.5 w-3.5" /> Restaurer l’original
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function LogosCard({ logos, onChange, fieldProps }) {
+  return (
+    <Card>
+      <CardHeader
+        title="Logos des partenaires"
+        subtitle="Affichés dans cet ordre en haut de l’accueil et de la page quiz"
+        icon={ImageIcon}
+      />
+      <div className="grid gap-4 md:grid-cols-3">
+        {LOGOS.map((logo) => (
+          <LogoTile
+            key={logo.slot}
+            logo={logo}
+            customUrl={logos?.[logo.slot]}
+            onChange={onChange}
+            titleField={fieldProps({
+              key: logo.titleKey,
+              label: 'Titre du logo',
+              where: 'Texte alternatif et infobulle au survol',
+            })}
+          />
+        ))}
+      </div>
+      <p className="mt-4 text-xs text-slate-400">
+        Image : PNG à fond transparent recommandé, au moins 200 px de haut · PNG, JPG ou WEBP · 2 Mo maximum, publiée
+        dès l’envoi. Titre : publié avec le bouton « Publier ».
+      </p>
+    </Card>
+  )
+}
+
 function ContentManager() {
   const [data, setData] = useState(null)
   const [form, setForm] = useState(null)
@@ -132,7 +252,8 @@ function ContentManager() {
   }, [])
 
   const changedKeys = useMemo(
-    () => (form && data ? Object.keys(form).filter((key) => form[key] !== data.content[key]) : []),
+    () =>
+      form && data ? Object.keys(data.limits).filter((key) => form[key] !== data.content[key]) : [],
     [form, data],
   )
   const dirty = changedKeys.length > 0
@@ -153,10 +274,25 @@ function ContentManager() {
     return () => clearTimeout(id)
   }, [savedAt])
 
+  const updateLogos = (logos) => {
+    setData((prev) => ({ ...prev, content: { ...prev.content, logos } }))
+    setSavedAt(Date.now())
+  }
+
   const update = (key) => (value) => {
     setForm((prev) => ({ ...prev, [key]: value }))
     setErrors((prev) => ({ ...prev, [key]: undefined }))
   }
+
+  const fieldProps = (field) => ({
+    field,
+    value: form[field.key] ?? '',
+    savedValue: data.content[field.key],
+    defaultValue: data.defaults[field.key],
+    max: data.limits[field.key],
+    error: errors[field.key],
+    onChange: update(field.key),
+  })
 
   const save = async () => {
     setSaving(true)
@@ -210,21 +346,13 @@ function ContentManager() {
         </div>
       ) : (
         <div className={`space-y-4 ${dirty ? 'pb-24' : ''}`}>
+          <LogosCard logos={data.content.logos} onChange={updateLogos} fieldProps={fieldProps} />
           {SECTIONS.map((section, i) => (
             <Card key={section.title} delay={i * 60}>
               <CardHeader title={section.title} subtitle={section.subtitle} icon={section.icon} />
               <div className={`grid gap-4 ${COLUMNS[section.columns ?? 1]}`}>
                 {section.fields.map((field) => (
-                  <Field
-                    key={field.key}
-                    field={field}
-                    value={form[field.key] ?? ''}
-                    savedValue={data.content[field.key]}
-                    defaultValue={data.defaults[field.key]}
-                    max={data.limits[field.key]}
-                    error={errors[field.key]}
-                    onChange={update(field.key)}
-                  />
+                  <Field key={field.key} {...fieldProps(field)} />
                 ))}
               </div>
             </Card>

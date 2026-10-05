@@ -34,12 +34,22 @@ export const CONTENT_FIELDS = {
     max: 250,
   },
 
+  logoMinistryTitle: { default: 'Royaume du Maroc – Ministère de l’Industrie et du Commerce', max: 150 },
+  logoAirshowTitle: { default: 'Marrakech Airshow 2026', max: 150 },
+  logoAssadTitle: {
+    default: 'ASSAD – Association des Salons du Spatial, de l’Aéronautique et de la Défense',
+    max: 150,
+  },
+
   thankYouText: {
     default:
       'Vos réponses ont bien été enregistrées. Les résultats et le classement seront annoncés par les organisateurs.',
     max: 400,
   },
 }
+
+export const LOGO_SLOTS = ['ministry', 'airshow', 'assad']
+export const logoKey = (slot) => `logo_${slot}`
 
 export const CONTENT_DEFAULTS = Object.fromEntries(
   Object.entries(CONTENT_FIELDS).map(([key, field]) => [key, field.default]),
