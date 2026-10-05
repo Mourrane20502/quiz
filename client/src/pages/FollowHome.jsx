@@ -8,16 +8,14 @@ const POLL_MS = 10000
 
 function FollowHome() {
   const content = useContent()
-  const [quizInfo, setQuizInfo] = useState(null)
+  const [active, setActive] = useState(null)
 
   useEffect(() => {
     const load = () =>
       axios
         .get('/api/quiz')
-        .then(({ data }) =>
-          setQuizInfo({ active: data.active, unlocked: data.questions.length, total: data.total || null }),
-        )
-        .catch(() => setQuizInfo(null))
+        .then(({ data }) => setActive(data.active))
+        .catch(() => setActive(null))
 
     load()
     const id = setInterval(load, POLL_MS)
@@ -26,16 +24,11 @@ function FollowHome() {
 
   return (
     <LandingPage
-      open={quizInfo?.active !== false}
+      open={active !== false}
       statusLabels={{ open: 'Suivi en direct', closed: 'Ouverture prochaine' }}
       title={content.followTitle}
       highlight={content.followTitleHighlight}
       description={content.followDescription}
-      stats={[
-        { value: quizInfo ? quizInfo.unlocked : '—', label: 'Débloquées' },
-        { value: quizInfo?.total ?? '—', label: 'Questions' },
-        { value: '0', label: 'Inscription requise' },
-      ]}
       qr={{
         url: publicBoardUrl,
         eyebrow: 'Accès public',

@@ -125,7 +125,7 @@ function QrCard({ url, eyebrow, title, linkTo, linkLabel }) {
   )
 }
 
-function LandingPage({ open, statusLabels, title, highlight, description, steps = [], stats, qr }) {
+function LandingPage({ open, statusLabels, title, highlight, description, steps = [], stats = [], qr }) {
   const content = useContent()
 
   return (
@@ -189,11 +189,13 @@ function LandingPage({ open, statusLabels, title, highlight, description, steps 
             </ol>
           )}
 
-          <div className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-4 border-t border-navy/10 pt-6">
-            {stats.map((stat) => (
-              <Stat key={stat.label} value={stat.value} label={stat.label} />
-            ))}
-          </div>
+          {stats.length > 0 && (
+            <div className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-4 border-t border-navy/10 pt-6">
+              {stats.map((stat) => (
+                <Stat key={stat.label} value={stat.value} label={stat.label} />
+              ))}
+            </div>
+          )}
         </section>
 
         <section className="relative min-w-0 animate-fade-up [animation-delay:150ms]">
