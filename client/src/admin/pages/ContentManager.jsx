@@ -57,23 +57,13 @@ const SECTIONS = [
   },
   {
     title: 'Page de suivi (/suivi)',
-    subtitle: 'Page d’accueil du suivi en direct, avec le QR code vers /public',
+    subtitle: 'Titre et présentation à côté du QR code vers /public',
     icon: Eye,
     fields: [
       { key: 'followTitle', label: 'Titre (ligne 1)', where: 'Grand titre, en bleu marine' },
       { key: 'followTitleHighlight', label: 'Titre (ligne 2)', where: 'Grand titre, en dégradé de couleurs' },
       { key: 'followDescription', label: 'Description', where: 'Paragraphe sous le titre', multiline: true },
     ],
-  },
-  {
-    title: 'Étapes de la page de suivi',
-    subtitle: 'Les trois cartes « Scannez / Suivez en direct / Sans répondre »',
-    icon: ListOrdered,
-    columns: 3,
-    fields: [1, 2, 3].flatMap((n) => [
-      { key: `followStep${n}Title`, label: `Étape ${n} · titre` },
-      { key: `followStep${n}Text`, label: `Étape ${n} · texte`, multiline: true },
-    ]),
   },
   {
     title: 'Page quiz',

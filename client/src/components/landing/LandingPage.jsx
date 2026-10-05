@@ -125,7 +125,7 @@ function QrCard({ url, eyebrow, title, linkTo, linkLabel }) {
   )
 }
 
-function LandingPage({ open, statusLabels, title, highlight, description, steps, stats, qr }) {
+function LandingPage({ open, statusLabels, title, highlight, description, steps = [], stats, qr }) {
   const content = useContent()
 
   return (
@@ -167,25 +167,27 @@ function LandingPage({ open, statusLabels, title, highlight, description, steps,
 
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-navy/75">{description}</p>
 
-          <ol className="mt-10 grid gap-4 sm:grid-cols-3">
-            {steps.map((step, i) => (
-              <li
-                key={i}
-                className="group relative rounded-2xl bg-white/75 p-5 shadow-sm ring-1 ring-navy/10 backdrop-blur transition hover:-translate-y-1 hover:bg-white hover:shadow-lg"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-navy text-white shadow-md">
-                    <StepIcon>{step.icon}</StepIcon>
-                  </span>
-                  <span className="font-display text-3xl font-extrabold text-navy/10 transition group-hover:text-gold/40">
-                    0{i + 1}
-                  </span>
-                </div>
-                <p className="mt-4 font-bold text-navy">{step.title}</p>
-                <p className="mt-1 text-sm leading-snug text-navy/65">{step.text}</p>
-              </li>
-            ))}
-          </ol>
+          {steps.length > 0 && (
+            <ol className="mt-10 grid gap-4 sm:grid-cols-3">
+              {steps.map((step, i) => (
+                <li
+                  key={i}
+                  className="group relative rounded-2xl bg-white/75 p-5 shadow-sm ring-1 ring-navy/10 backdrop-blur transition hover:-translate-y-1 hover:bg-white hover:shadow-lg"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-navy text-white shadow-md">
+                      <StepIcon>{step.icon}</StepIcon>
+                    </span>
+                    <span className="font-display text-3xl font-extrabold text-navy/10 transition group-hover:text-gold/40">
+                      0{i + 1}
+                    </span>
+                  </div>
+                  <p className="mt-4 font-bold text-navy">{step.title}</p>
+                  <p className="mt-1 text-sm leading-snug text-navy/65">{step.text}</p>
+                </li>
+              ))}
+            </ol>
+          )}
 
           <div className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-4 border-t border-navy/10 pt-6">
             {stats.map((stat) => (

@@ -29,13 +29,6 @@ export const CONTENT_FIELDS = {
       'Découvrez en direct les questions du quiz de la Journée « Talents » du Marrakech Airshow 2026, sans y répondre. Idéal pour le public, les accompagnateurs et les enseignants.',
     max: 400,
   },
-  followStep1Title: { default: 'Scannez', max: 40 },
-  followStep1Text: { default: 'Pointez l’appareil photo de votre téléphone vers le QR code.', max: 160 },
-  followStep2Title: { default: 'Suivez en direct', max: 40 },
-  followStep2Text: { default: 'Les questions apparaissent au fur et à mesure de leur déblocage.', max: 160 },
-  followStep3Title: { default: 'Sans répondre', max: 40 },
-  followStep3Text: { default: 'Consultation seule : aucune inscription, aucune réponse demandée.', max: 160 },
-
   quizTitle: { default: 'Quiz', max: 40 },
   quizDescription: {
     default:

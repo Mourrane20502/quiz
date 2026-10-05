@@ -23,13 +23,6 @@ export const DEFAULT_CONTENT = {
   followTitleHighlight: 'question après question.',
   followDescription:
     'Découvrez en direct les questions du quiz de la Journée « Talents » du Marrakech Airshow 2026, sans y répondre. Idéal pour le public, les accompagnateurs et les enseignants.',
-  followStep1Title: 'Scannez',
-  followStep1Text: 'Pointez l’appareil photo de votre téléphone vers le QR code.',
-  followStep2Title: 'Suivez en direct',
-  followStep2Text: 'Les questions apparaissent au fur et à mesure de leur déblocage.',
-  followStep3Title: 'Sans répondre',
-  followStep3Text: 'Consultation seule : aucune inscription, aucune réponse demandée.',
-
   quizTitle: 'Quiz',
   quizDescription:
     'Le salon international de l’aéronautique, du spatial et de la défense ouvre ses portes aux jeunes talents. Testez vos connaissances sur l’événement et le monde de l’aviation !',
