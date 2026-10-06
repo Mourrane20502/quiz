@@ -132,7 +132,6 @@ function ParticipantForm({ onRegistered, onBack }) {
               type="text"
               value={form.fullName}
               onChange={update('fullName')}
-              placeholder="Ex : Yassine El Amrani"
               autoComplete="name"
               required
               className={`${inputClass} ${borderFor('fullName')}`}
@@ -145,7 +144,6 @@ function ParticipantForm({ onRegistered, onBack }) {
               type="text"
               value={form.school}
               onChange={update('school')}
-              placeholder="Ex : ENSA Marrakech"
               autoComplete="organization"
               maxLength={190}
               required
@@ -160,7 +158,6 @@ function ParticipantForm({ onRegistered, onBack }) {
               inputMode="tel"
               value={form.phone}
               onChange={update('phone')}
-              placeholder="+212 6 00 00 00 00"
               autoComplete="tel"
               required
               className={`${inputClass} ${borderFor('phone')}`}

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { QRCodeSVG } from 'qrcode.react'
+import { Pause, Play, RotateCcw } from 'lucide-react'
 import PartnerLogos from '../components/PartnerLogos.jsx'
 import { useContent } from '../content/ContentContext.js'
 import { quizUrl } from '../lib/quizUrl.js'
@@ -8,6 +9,7 @@ import airshowStar from '../assets/event/airshow-star.png'
 
 const POLL_MS = 5000
 const NEW_BADGE_MS = 60000
+const TIMER_TICK_MS = 200
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F']
 
 function LiveBadge({ open, updatedAt }) {
@@ -23,6 +25,97 @@ function LiveBadge({ open, updatedAt }) {
           · mis à jour à {updatedAt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
         </span>
       )}
+    </div>
+  )
+}
+
+function useCountdown(seconds) {
+  const total = seconds * 1000
+  const [timer, setTimer] = useState(() => ({ endsAt: Date.now() + total, left: total }))
+
+  useEffect(() => {
+    if (!timer.endsAt) return
+    const id = setInterval(() => {
+      const left = Math.max(0, timer.endsAt - Date.now())
+      setTimer(left === 0 ? { endsAt: null, left: 0 } : { endsAt: timer.endsAt, left })
+    }, TIMER_TICK_MS)
+    return () => clearInterval(id)
+  }, [timer.endsAt])
+
+  return {
+    left: timer.left,
+    total,
+    running: timer.endsAt !== null,
+    start: () => setTimer((t) => ({ endsAt: Date.now() + (t.left || total), left: t.left || total })),
+    pause: () => setTimer((t) => ({ endsAt: null, left: Math.max(0, t.endsAt - Date.now()) })),
+    reset: () => setTimer({ endsAt: null, left: total }),
+  }
+}
+
+function QuestionTimer({ seconds }) {
+  const { left, total, running, start, pause, reset } = useCountdown(seconds)
+  const ratio = left / total
+  const done = left === 0
+  const color = done || ratio <= 0.2 ? 'text-morocco-red' : ratio <= 0.5 ? 'text-gold' : 'text-morocco-green'
+  const bar = done || ratio <= 0.2 ? 'bg-morocco-red' : ratio <= 0.5 ? 'bg-gold' : 'bg-morocco-green'
+  const label = done ? 'Temps écoulé !' : running ? 'En cours' : left === total ? 'Chronomètre' : 'En pause'
+
+  return (
+    <div className="mt-4 flex items-center gap-3 rounded-xl bg-navy/[0.04] p-2.5 ring-1 ring-navy/5">
+      <div className={`relative h-12 w-12 shrink-0 ${color}`}>
+        <svg viewBox="0 0 48 48" className="h-full w-full -rotate-90">
+          <circle cx="24" cy="24" r="20" fill="white" stroke="rgb(11 31 75 / 0.1)" strokeWidth="4" />
+          <circle
+            cx="24"
+            cy="24"
+            r="20"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="4"
+            strokeLinecap="round"
+            pathLength="100"
+            strokeDasharray="100"
+            strokeDashoffset={100 - ratio * 100}
+            className="transition-[stroke-dashoffset] duration-200 ease-linear"
+          />
+        </svg>
+        <span className="absolute inset-0 flex items-center justify-center font-display text-base font-bold tabular-nums text-navy">
+          {Math.ceil(left / 1000)}
+        </span>
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <p className={`text-xs font-bold uppercase tracking-wider ${done ? 'text-morocco-red' : 'text-navy/60'}`}>{label}</p>
+        <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-navy/10">
+          <div
+            className={`h-full rounded-full transition-[width] duration-200 ease-linear ${bar}`}
+            style={{ width: `${ratio * 100}%` }}
+          />
+        </div>
+        <p className="mt-1 text-[11px] text-navy/50">{seconds} secondes pour répondre</p>
+      </div>
+
+      <div className="flex shrink-0 gap-1.5">
+        <button
+          type="button"
+          onClick={running ? pause : start}
+          aria-label={running ? 'Mettre en pause' : done ? 'Relancer' : 'Démarrer'}
+          title={running ? 'Mettre en pause' : done ? 'Relancer' : 'Démarrer'}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-navy text-white shadow transition hover:bg-navy-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+        >
+          {running ? <Pause className="h-4 w-4 fill-white" /> : <Play className="ml-0.5 h-4 w-4 fill-white" />}
+        </button>
+        <button
+          type="button"
+          onClick={reset}
+          disabled={!running && left === total}
+          aria-label="Réinitialiser"
+          title="Réinitialiser"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-navy shadow-sm ring-1 ring-navy/10 transition hover:bg-navy/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold disabled:opacity-40"
+        >
+          <RotateCcw className="h-4 w-4" />
+        </button>
+      </div>
     </div>
   )
 }
@@ -52,7 +145,6 @@ function QuestionCard({ question, number, isNew, cardRef }) {
               Nouveau
             </span>
           )}
-          <span className="rounded-full bg-navy/5 px-2.5 py-1 text-xs font-semibold text-navy/70">{question.timeLimit} s</span>
         </div>
       </div>
 
@@ -75,6 +167,8 @@ function QuestionCard({ question, number, isNew, cardRef }) {
           </li>
         ))}
       </ul>
+
+      <QuestionTimer seconds={question.timeLimit} />
     </article>
   )
 }
