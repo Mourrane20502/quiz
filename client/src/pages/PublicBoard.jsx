@@ -1,11 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import axios from 'axios'
-import { QRCodeSVG } from 'qrcode.react'
 import { Pause, Play, RotateCcw } from 'lucide-react'
 import PartnerLogos from '../components/PartnerLogos.jsx'
 import { useContent } from '../content/ContentContext.js'
-import { quizUrl } from '../lib/quizUrl.js'
-import airshowStar from '../assets/event/airshow-star.png'
 
 const POLL_MS = 5000
 const NEW_BADGE_MS = 60000
@@ -173,26 +170,6 @@ function QuestionCard({ question, number, isNew, cardRef }) {
   )
 }
 
-function JoinCard() {
-  return (
-    <div className="flex items-center gap-4 rounded-2xl bg-white/95 p-4 shadow-lg ring-1 ring-navy/10">
-      <QRCodeSVG
-        value={quizUrl}
-        size={256}
-        level="H"
-        fgColor="#0b1f4b"
-        imageSettings={{ src: airshowStar, height: 48, width: 48, excavate: true }}
-        className="h-24 w-24 shrink-0"
-      />
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gold">Participez</p>
-        <p className="font-display text-lg font-bold leading-tight text-navy">Scannez pour jouer</p>
-        <p className="mt-1 text-xs text-navy/60">Répondez depuis votre téléphone</p>
-      </div>
-    </div>
-  )
-}
-
 function PublicBoard() {
   const content = useContent()
   const [quiz, setQuiz] = useState(null)
@@ -254,7 +231,7 @@ function PublicBoard() {
         <LiveBadge open={open} updatedAt={quiz?.updatedAt} />
       </header>
 
-      <main className="relative z-10 mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:px-10">
+      <main className="relative z-10 mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-10">
         <section className="min-w-0">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -287,8 +264,8 @@ function PublicBoard() {
           )}
 
           {!quiz ? (
-            <div className="mt-8 grid gap-4 xl:grid-cols-2">
-              {[0, 1, 2, 3].map((i) => (
+            <div className="mt-8 grid gap-4">
+              {[0, 1, 2].map((i) => (
                 <div key={i} className="h-56 animate-pulse rounded-2xl bg-white/60" />
               ))}
             </div>
@@ -303,7 +280,7 @@ function PublicBoard() {
               <p className="mt-2 text-sm text-navy/60">Elle apparaîtra ici dès que les organisateurs la débloqueront.</p>
             </div>
           ) : (
-            <div className="mt-8 grid gap-4 xl:grid-cols-2">
+            <div className="mt-8 grid gap-4">
               {questions.map((q, i) => (
                 <QuestionCard
                   key={q.id}
@@ -316,18 +293,6 @@ function PublicBoard() {
             </div>
           )}
         </section>
-
-        <aside className="hidden lg:block">
-          <div className="sticky top-6 space-y-4">
-            <JoinCard />
-            <div className="rounded-2xl bg-white/80 p-4 text-sm text-navy/70 shadow-sm ring-1 ring-navy/10">
-              <p className="font-semibold text-navy">{content.eventName}</p>
-              <p className="mt-1">
-                {content.eventDate} · {content.eventLocation}
-              </p>
-            </div>
-          </div>
-        </aside>
       </main>
 
       <footer className="relative z-0 mt-auto">
