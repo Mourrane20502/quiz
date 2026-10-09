@@ -92,9 +92,11 @@ router.get('/', async (req, res, next) => {
 
 router.get('/leaderboard', async (req, res, next) => {
   try {
+    const statuses = req.query.scope === 'completed' ? ['completed'] : ['completed', 'in_progress']
     const [rows] = await pool.query(
-      `${BASE_SELECT} WHERE a.status = 'completed'
-       ORDER BY a.score DESC, a.total_time_ms ASC, a.completed_at ASC`,
+      `${BASE_SELECT} WHERE a.status IN (?)
+       ORDER BY a.score DESC, a.status = 'completed' DESC, a.total_time_ms ASC, a.completed_at ASC`,
+      [statuses],
     )
     res.json(rows.map((r, i) => ({ rank: i + 1, ...toRow(r) })))
   } catch (err) {
