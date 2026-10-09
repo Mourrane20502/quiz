@@ -57,7 +57,7 @@ const SECTIONS = [
   },
   {
     title: 'Page de suivi (/suivi)',
-    subtitle: 'Titre et présentation à côté du QR code vers /public',
+    subtitle: 'Titre et présentation à côté du QR code vers /quiz',
     icon: Eye,
     fields: [
       { key: 'followTitle', label: 'Titre (ligne 1)', where: 'Grand titre, en bleu marine' },

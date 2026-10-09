@@ -170,6 +170,14 @@ function Participants() {
                             {p.score}
                             <span className="font-medium text-slate-400">/{p.total}</span>
                           </span>
+                        ) : p.status === 'in_progress' ? (
+                          <>
+                            <span className="font-bold text-navy/70">
+                              {p.score}
+                              <span className="font-medium text-slate-400">/{p.total}</span>
+                            </span>
+                            <p className="mt-1 text-[11px] text-slate-400">provisoire</p>
+                          </>
                         ) : (
                           <span className="text-slate-400">—</span>
                         )}

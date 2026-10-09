@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import LandingPage from '../components/landing/LandingPage.jsx'
 import { useContent } from '../content/ContentContext.js'
-import { publicBoardUrl } from '../lib/quizUrl.js'
+import { quizUrl } from '../lib/quizUrl.js'
 
 const POLL_MS = 10000
 
@@ -30,9 +30,9 @@ function FollowHome() {
       highlight={content.followTitleHighlight}
       description={content.followDescription}
       qr={{
-        url: publicBoardUrl,
-        eyebrow: 'Accès public',
-        title: 'Scannez pour suivre',
+        url: quizUrl,
+        eyebrow: 'Accès participant',
+        title: 'Scannez pour jouer',
         linkTo: '/public',
         linkLabel: 'Voir les questions',
       }}

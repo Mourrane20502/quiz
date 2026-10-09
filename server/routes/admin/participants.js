@@ -32,11 +32,11 @@ function buildFilters(query) {
   const minScore = Number.parseInt(query.minScore, 10)
   const maxScore = Number.parseInt(query.maxScore, 10)
   if (Number.isFinite(minScore)) {
-    where.push("a.status = 'completed' AND a.score >= ?")
+    where.push('a.id IS NOT NULL AND a.score >= ?')
     params.push(minScore)
   }
   if (Number.isFinite(maxScore)) {
-    where.push("a.status = 'completed' AND a.score <= ?")
+    where.push('a.id IS NOT NULL AND a.score <= ?')
     params.push(maxScore)
   }
 
@@ -128,9 +128,9 @@ router.get('/export', async (req, res, next) => {
       school: r.school,
       phone: r.phone,
       status: STATUS_LABELS[r.status ?? 'registered'],
-      score: r.status === 'completed' ? r.score : '',
+      score: r.status ? r.score : '',
       total: r.total_questions ?? '',
-      percent: r.status === 'completed' && r.total_questions ? Math.round((r.score / r.total_questions) * 100) : '',
+      percent: r.status && r.total_questions ? Math.round((r.score / r.total_questions) * 100) : '',
       seconds: r.status === 'completed' ? Math.round(r.total_time_ms / 1000) : '',
       createdAt: r.created_at,
       completedAt: r.completed_at ?? '',
